@@ -1,0 +1,8 @@
+# 自动生成: 按时间先后顺序 8:2 划分（与 02_process_data/VOC/data.yaml 保持同一套）
+# 已于服务器本地化：原 Windows 路径 D:/Deep Learning/... 已废弃。
+path: /data02/machao/01_Projects/Gymnocypris eckloni/02_process_data/VOC
+train: images/train
+val: images/val
+
+nc: 8
+names: ["1", "2", "3", "4", "5", "6", "7", "8"]

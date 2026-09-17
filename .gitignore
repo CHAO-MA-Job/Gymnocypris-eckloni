@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 大文件：视频与图片一律走 Zenodo，不进 git
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.jpg
+*.jpeg
+*.png
+*.tif
+
+# 训练与中间产物
+runs/
+*.pt
+!model/best.pt
+*.onnx
+*.engine
+last.pt
+
+# 数据与输出（体积大或含绝对路径）
+01_Orgin_data/
+02_process_data/ultralytics-8.3.86/
+04_Outputs/
+99_历史文件/
+05_figues/
+
+# 编辑器与系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 密钥
+.env
+*.token

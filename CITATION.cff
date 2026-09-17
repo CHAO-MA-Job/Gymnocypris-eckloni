@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use this software or the associated data, please cite both this repository and the Zenodo data deposit."
+title: "Behavioural video quantification for Gymnocypris eckloni under warming: code and annotations"
+version: 1.0.0
+date-released: "2026-09-17"
+license: MIT
+repository-code: "https://github.com/CHAO-MA-Job/Gymnocypris-eckloni"
+url: "https://github.com/CHAO-MA-Job/Gymnocypris-eckloni"
+abstract: >-
+  Code, image annotations and detector weights for a contact-free pipeline that quantifies
+  fish behaviour from below-tank video. An eight-category ethogram decomposes swimming into
+  opercular, pectoral and caudal regions; a stock YOLO11n detector labels these regions frame
+  by frame, and post-processing converts the labels into continuous indices of locomotion and
+  of organ-level action. Demonstrated on 15 Gymnocypris eckloni across 16-25 C.
+keywords:
+  - Gymnocypris eckloni
+  - fish behaviour
+  - thermal stress
+  - object detection
+  - YOLO11n
+  - ethogram
+  - non-invasive monitoring
+authors:
+  - family-names: "Ma"
+    given-names: "Chao"
+    affiliation: "Xizang University; Southwest University"
+  - family-names: "Gao"
+    given-names: "He"
+    affiliation: "Southwest University"
+  - family-names: "Chen"
+    given-names: "Xiao"
+    affiliation: "Southwest University"
+  - family-names: "Li"
+    given-names: "Junting"
+    affiliation: "Southwest University"
+  - family-names: "Han"
+    given-names: "Zhaofang"
+    affiliation: "Southwest University"
+  - family-names: "Zhou"
+    given-names: "Chaowei"
+    affiliation: "Southwest University"
+  - family-names: "Liu"
+    given-names: "Haiping"
+    affiliation: "Southwest University"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.XXXXXXX"
+    description: "Zenodo data deposit (videos and keyframe images). Replace XXXXXXX after the deposit is published."
