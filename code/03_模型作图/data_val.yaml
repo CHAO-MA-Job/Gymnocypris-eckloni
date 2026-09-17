@@ -1,6 +1,0 @@
-# 验证用数据集: 本项目数据集 VOCdevkit（train 3017 / val 755）
-path: D:/Deep_Learning/01_Projects/Gymnocypris eckloni/02_process_data/VOCdevkit
-train: train/images
-val: val/images
-nc: 8
-names: ["1", "2", "3", "4", "5", "6", "7", "8"]
