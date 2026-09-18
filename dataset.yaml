@@ -1,0 +1,15 @@
+# Dataset descriptor for detector training and validation (8:2 random split).
+#
+# Keyframes are archived on Zenodo because of their size; unpack them so that the
+# repository root contains:
+#
+#   images/train/   images/val/      keyframes
+#   labels/train/   labels/val/      YOLO labels (= annotations/labels in this repository)
+#
+# Override the root with GYO_DATASET if the data live elsewhere.
+path: .
+train: images/train
+val: images/val
+
+nc: 8
+names: ["1", "2", "3", "4", "5", "6", "7", "8"]

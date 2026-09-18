@@ -1,24 +1,31 @@
 # Behavioural video quantification for *Gymnocypris eckloni* under warming
 
-Code, annotations and model weights for the manuscript **"Non-invasive quantification of
-fine-scale behaviour in *Gymnocypris eckloni* along a warming gradient"** (submitted to
-*Animals*, MDPI).
+Code, annotations and model weights for the study of non-invasive quantification of fine-scale
+behaviour in *Gymnocypris eckloni* along a warming gradient.
 
-The **raw videos and keyframe images are archived on Zenodo** because of their size:
-**[Zenodo DOI / link — fill in after upload]**。
+The **training code and the annotated training dataset** are here, together with the detector
+weights and the per-fish tables. The **raw video recordings (3.96 GB) and keyframe images** exceed
+GitHub's 100 MB single-file limit and are **available from the first author (Chao Ma) on reasonable
+request**. Zenodo archives this repository on every release; cite it through **[DOI of the Zenodo
+archive, filled in after the first release]**.
 
 ## What is in this repository
 
 | Path | Contents |
 |---|---|
-`code/` | All scripts: keyframe extraction, dataset construction, detector training, video quantification, frequency analysis and figure plotting |
-`annotations/Annotations/` | 3,772 VOC-format XML annotations |
-`annotations/labels/` | The same annotations in YOLO txt format |
-`split/train.txt`, `split/val.txt` | Image filenames in the 8:2 split (3,017 train / 755 validation) |
-`model/best.pt` | Detector weights used for every result in the paper (mAP@0.5 = 0.9197) |
-`model/results.csv` | Per-epoch training and validation metrics |
-`tables/per_fish_metrics.csv` | Per-fish velocity, cumulative displacement and the three part-movement rates |
-`tables/human_validation_21-1.xlsx` | Automated versus human counts per 10 s window (fish 21-1) |
+| `code/` | Scripts for detector training, video quantification and the behavioural tables |
+| `annotations/Annotations/` | 3,772 VOC-format XML annotations |
+| `annotations/labels/` | The same annotations in YOLO txt format |
+| `split/train.txt`, `split/val.txt` | Image filenames in the 8:2 split (3,017 train / 755 validation) |
+| `dataset.yaml` | Dataset descriptor used for training and validation |
+| `model/best.pt` | Detector weights used for every result in the paper (mAP@0.5 = 0.9197) |
+| `model/args.yaml`, `model/results.csv` | Training arguments and per-epoch metrics |
+| `model/PROVENANCE.md` | How the released weights were produced |
+| `quantification/opercular/stats/`, `quantification/pectoral/stats/`, `quantification/caudal/stats/` | Per-fish action-rate tables, one workbook per recording for each body part |
+| `tables/per_fish_metrics.csv` | Per-fish swimming speed, cumulative displacement and the three part-movement rates |
+| `tables/per_fish_summary.xlsx`, `tables/centroid_trajectory_1hz.xlsx`, `tables/velocity_displacement.xlsx` | Per-fish summary, 1 Hz centroid tracks and the velocity/displacement table |
+| `tables/human_validation_21-1.xlsx` | Automated versus human counts per 10 s window for fish 21-1 |
+| `docs/pipeline.md` | Training and quantification pipeline |
 
 ## Ethogram
 
@@ -26,40 +33,36 @@ Eight classes over three functional regions, plus a whole-fish class used for lo
 
 | Class | Region | States |
 |---|---|---|
-1 | whole fish | localisation only |
-2, 3 | operculum | closed, open |
-4, 5 | pectoral fins | minimal contraction, maximal expansion |
-6, 7, 8 | caudal peduncle | left, centred, right |
+| 1 | whole fish | localisation only |
+| 2, 3 | operculum | closed, open |
+| 4, 5 | pectoral fins | minimal contraction, maximal expansion |
+| 6, 7, 8 | caudal peduncle | left, centred, right |
 
 States are mutually exclusive within a region and may co-occur between regions.
 
 ## Environment
 
-Python 3; `requirements.txt` is generated from the imports in `code/`, so pin the versions to
-your own environment before use. Detector training used Ultralytics 8.3.86 at an input size of
-640 × 640, on a workstation with an NVIDIA RTX 4070 (8 GB).
+Python 3, NumPy, pandas, OpenCV, matplotlib, openpyxl and Ultralytics. `requirements.txt` lists
+the packages imported by `code/`; pin the versions to your own environment before use. Detector
+training used Ultralytics 8.4.6 at an input size of 640 x 640.
 
 ## Reproduction outline
 
-1. Download the Zenodo deposit and place `videos_raw/` (15 recordings) and `images/` (3,772
-   keyframes) where `code/` expects them.
-2. Rebuild the dataset from `split/*.txt` together with `annotations/`.
-3. Either train the detector or reuse `model/best.pt`.
-4. Run the quantification and frequency steps, then check against `tables/per_fish_metrics.csv`.
+1. Obtain the recordings and keyframes from the first author and unpack them where `code/`
+   expects them (`GYO_VIDEO_SRC` for the recordings, `images/` for the keyframes).
+2. Rebuild the dataset from `split/*.txt` together with `annotations/`, using `dataset.yaml`.
+3. Either train the detector with `code/00_training/randomsplit_VOCdevkit/train_G0_yolo11n_unified.py`
+   or reuse `model/best.pt`.
+4. Run the quantification and the action-rate steps with `python code/run_downstream.py`, then
+   compare the result with `tables/per_fish_metrics.csv`.
 
-The scripts in `code/` carry their own notes on arguments and intermediate files; start from
-the dataset-construction and quantification steps.
-
-## Ethics
-
-All procedures were approved by the Institutional Animal Care and Use Committee of Southwest
-University (protocol code IACUC-20240702-09; date of approval: 2 July 2024).
+`code/README.md` lists the scripts with their inputs and outputs.
 
 ## Licence
 
-Code: **MIT**. Annotations and tables: **CC BY 4.0**. Videos and images on Zenodo: **CC BY 4.0**.
+Code: **MIT**. Annotations and tables: **CC BY 4.0**. Recordings and keyframes obtained from the authors:
+**CC BY 4.0**.
 
 ## Cite
 
-See `CITATION.cff`. Once the Zenodo DOI is issued, add it there and to the Data Availability
-Statement of the manuscript.
+See `CITATION.cff`. Add the Zenodo DOI of the code archive there once it is issued.

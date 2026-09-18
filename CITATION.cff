@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software or the associated data, please cite both this repository and the Zenodo data deposit."
+message: "If you use this software, the training dataset or the weights, please cite this repository together with its Zenodo archive."
 title: "Behavioural video quantification for Gymnocypris eckloni under warming: code and annotations"
 version: 1.0.0
 date-released: "2026-09-17"
@@ -23,26 +23,19 @@ keywords:
 authors:
   - family-names: "Ma"
     given-names: "Chao"
-    affiliation: "Xizang University; Southwest University"
   - family-names: "Gao"
     given-names: "He"
-    affiliation: "Southwest University"
   - family-names: "Chen"
     given-names: "Xiao"
-    affiliation: "Southwest University"
   - family-names: "Li"
     given-names: "Junting"
-    affiliation: "Southwest University"
   - family-names: "Han"
     given-names: "Zhaofang"
-    affiliation: "Southwest University"
   - family-names: "Zhou"
     given-names: "Chaowei"
-    affiliation: "Southwest University"
   - family-names: "Liu"
     given-names: "Haiping"
-    affiliation: "Southwest University"
 identifiers:
   - type: doi
-    value: "10.5281/zenodo.XXXXXXX"
-    description: "Zenodo data deposit (videos and keyframe images). Replace XXXXXXX after the deposit is published."
+    value: "10.5281/zenodo.<id>"
+    description: "Zenodo archive of this GitHub release, covering the code, annotations, split files, detector weights and derived tables. Fill in after enabling the Zenodo-GitHub integration and publishing the first release. Raw recordings and keyframe images are excluded from every archive because of their size."

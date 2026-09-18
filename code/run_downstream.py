@@ -1,152 +1,123 @@
 # -*- coding: utf-8 -*-
-"""run_downstream.py —— 下游链【5 阶段】一键执行（按 gyo_paths 归口规范）
-================================================================
-所有路径由 `03_Code/gyo_paths.py` 统一解析，**本脚本不写任何绝对路径**。
+"""run_downstream.py - one-command execution of the quantification pipeline.
 
- 阶段1 提取表与运动学   → 数据根 P.QUANT
-     B  组装 0_Origin_data_s.xlsx（读 P.MP4 下各视频的 bbox_data.xlsx）
-     C  拆分 1_全身 / 2_鳃盖 / 3_胸鳍 / 4_尾鳍
-     D  运动学 5_公式计算后 / 6_总结版 / 7_中心点轨迹 / 8_速度位移
- 阶段2 频率计算         → 数据根 P.QUANT（与阶段1 同根）
-     E1 三部位频率（呼吸/胸鳍/尾鳍）→ <QUANT>/<部位>/{统计,图}/
-     E2 15 表组合 → <QUANT>/{呼吸频率,胸鳍摆动频率,尾鳍摆动频率}.xlsx
-     F  逐鱼指标 per_fish_metrics.* → <QUANT>/
-     校验 compute_*（重算 vs 权威合并表，报 MAE / r）
- 阶段3 模型作图         → P.MODEL_FIG (04_Outputs/03_模型作图)
-     混淆矩阵（读 P.WEIGHTS + P.DATA_YAML）、训练曲线（读 P.TRAIN_CSV）
- 阶段4 行为作图         → P.FIG (04_Outputs/04_行为作图) —— 运动学 + 轨迹（主图）
-     全身速度/位移(Fig2 简版, Fig6B 正图) / 全身坐标轨迹(Fig7) / 温度回归(Fig8)
-     + Fig11 速度一致性 / Fig12 空间使用 / Fig13 投影面积（2026-09-16 新增）
- 阶段5 频率作图         → P.FREQ (04_Outputs/05_频率计算) —— 仅 F2 波形（进正文，纯量化展示）
- 阶段6 补充作图         → P.SUPP (04_Outputs/06_Supplementary) —— 不进正文的描述性图
-     Fig9 轨迹几何 / Fig10 PCA / F1 频率vs温度 / F3 协同 / F4 呼吸-速度 / F5 代价比
-     （2026-09-16 由 阶段4/阶段5 移入）
+Every path is resolved by ``gyo_paths.py``; this script writes no absolute path itself.
 
-【承接服务器新量化产物】只需设环境变量，不改任何脚本：
-    set GYO_QUANT=<新数据根>        # 阶段1/2 的输入与输出（其下需有 MP4/ 与四表）
-    set GYO_TRAIN_TAG=<新模型名>    # 阶段3 定位 <TRAIN>/<tag>/results.csv
-    set GYO_WEIGHTS=<新 best.pt>    # 阶段3 混淆矩阵
-    set GYO_IMGSZ=<训练尺寸>        # 阶段3 混淆矩阵（默认 960）
-    python "03_Code\\run_downstream.py"
-    （逐视频量化产物放在 <GYO_QUANT>/MP4/<视频名>/bbox_data.xlsx）
+Step 1 - tables and kinematics          -> working data root (P.WORK / P.QUANT)
+    A   detector output per recording    MP4/<recording>/bbox_data.xlsx      (needs videos)
+    B   assemble                        0_Origin_data_s.xlsx                  (15 sheets)
+    C   split by region                 1_whole_body / 2_operculum / 3_pectoral / 4_caudal
+    D   kinematics                      5_formula / 6_summary / 7_centroid_trajectory
+                                        / 8_velocity_displacement
+    E   table formatting                in-place (header, freeze row, column widths)
 
-用法
-    python "03_Code\\run_downstream.py"                  # 全部
-    python "03_Code\\run_downstream.py" 阶段2             # 只跑名称含"阶段2"的步骤
-    python "03_Code\\run_downstream.py" 混淆 训练曲线       # 按关键字选步
-    set GYO_SKIP_B=1                                     # 跳过 Step B（已组装过）
-    python "03_Code\\gyo_paths.py"                        # 只打印当前路径配置
+Step 2 - action rates per body part     -> working data root
+    F1  per-fish rate tables            <region>/stats/  (15 files per body part)
+    F2  merge the 15 sheets             respiration.xlsx / pectoral.xlsx / caudal.xlsx
+    F3  per-fish summary                tables/per_fish_metrics.{csv,xlsx}
+    F4  consistency check               recompute from the region tables, compare cell by cell
+    F5  human agreement                 tables/human_validation_21-1.xlsx (ground truth)
+
+The detector step needs the raw recordings, which are too large for GitHub and ship separately rather than
+shipped here; set ``GYO_SKIP_QUANTIFY=1`` when the per-video tables already exist.
+
+Usage
+-----
+    python code/run_downstream.py                # all steps
+    python code/run_downstream.py F2             # only steps whose name contains "F2"
+    python code/run_downstream.py merge check    # select steps by keyword
+    python code/run_downstream.py --show         # print the effective configuration only
+
+Environment
+-----------
+    GYO_SKIP_QUANTIFY=1   skip step A (per-video detector output)
+    GYO_SKIP_FORMAT=1     skip step E (in-place Excel formatting)
+    GYO_PYTHON            interpreter used for the steps (default: this interpreter)
 """
 import os
-import sys
 import subprocess
+import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))   # 03_Code
+HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import gyo_paths as P          # noqa: E402
 
-PY = sys.executable
-os.environ.setdefault('CODEBUDDY_SAFE_DELETE_ENABLED', '0')
-os.environ.setdefault('PYTHONIOENCODING', 'utf-8')   # 防 Windows GBK 控制台下 print 崩溃
+# Windows consoles default to a legacy code page that cannot print every character.
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
 
-SKIP_B = os.environ.get('GYO_SKIP_B') == '1'
-SKIP_BEAUTIFY = os.environ.get('GYO_SKIP_BEAUTIFY') == '1'
-# Step B 输入：若量化产物是"单个合并 15-sheet 表"，用 GYO_STEP_B_INPUT 直接指定，
-# 免去逐视频 MP4/<vid>/bbox_data.xlsx 的目录约定。
-STEP_B_INPUT = os.environ.get('GYO_STEP_B_INPUT') or None
-
-# (阶段, 步骤名, 阶段内脚本相对 03_Code 的路径)
-_STEPS = [
-    ('阶段1', 'B  组装 Origin_data_s', r'01_提取表与运动学\0_3_assemble_Origin_data_s.py'),
-    ('阶段1', 'C  拆分四表',           r'01_提取表与运动学\1_split_origin_s_to_four.py'),
-    ('阶段1', 'D1 运动学·公式',        r'01_提取表与运动学\5_process_quanshen.py'),
-    ('阶段1', 'D2 速度位移/总结',      r'01_提取表与运动学\6_8_regen_speed_disp_fixed.py'),
-    ('阶段1', 'D3 中心点轨迹',         r'01_提取表与运动学\7_center_trajectory_1hz.py'),
-    ('阶段1', 'D4 表格美化',           r'01_提取表与运动学\10_beautify_tables.py'),
-
-    ('阶段2', 'E1 呼吸频率',           r'02_行为频率\类别1,2——呼吸频率计算与绘图.py'),
-    ('阶段2', 'E1 胸鳍摆动频率',        r'02_行为频率\类别3,4——胸鳍摆动频率计算与绘图.py'),
-    ('阶段2', 'E1 尾鳍摆动频率',        r'02_行为频率\类别5,6,7——尾鳍摆动频率计算与绘图.py'),
-    ('阶段2', 'E2 15表组合',           r'02_行为频率\combine_15_sheets.py'),
-    ('阶段2', 'F  汇总逐鱼',           r'02_行为频率\make_per_fish_metrics.py'),
-    ('阶段2', '校验 呼吸频率重算',      r'02_行为频率\compute_respiration.py'),
-    ('阶段2', '校验 胸鳍频率重算',      r'02_行为频率\compute_pectoral.py'),
-    ('阶段2', '校验 尾鳍频率重算',      r'02_行为频率\compute_caudal.py'),
-    ('阶段2', 'E3 人眼对照表',         r'02_行为频率\make_21-1_countboard.py'),
-
-    ('阶段3', '混淆矩阵',              r'03_模型作图\fig6_confusion.py'),
-    ('阶段3', '训练曲线',              r'03_模型作图\fig6_training_curves.py'),
-    ('阶段3', 'Fig6 人眼对照曲线',      r'03_模型作图\fig6_validation_curve.py'),
-
-    ('阶段4', 'Fig2 速度/位移简版',     r'04_行为作图\fig2_body_vs_temp.py'),
-    ('阶段4', 'Fig6B 速度位移',        r'04_行为作图\fig6b_kinematics.py'),
-    ('阶段4', 'Fig7 全身坐标轨迹',      r'04_行为作图\fig7_trajectory_heatmap.py'),
-    ('阶段4', 'Fig8 温度回归',         r'04_行为作图\fig8_temp_regression.py'),
-    ('阶段4', 'Fig11 速度一致性',      r'04_行为作图\fig11_velocity_consistency.py'),
-    ('阶段4', 'Fig12 空间使用',        r'04_行为作图\fig12_spatial_use.py'),
-    ('阶段4', 'Fig13 投影面积',        r'04_行为作图\fig13_bbox_area.py'),
-
-    ('阶段5', 'F2 频率波形',           r'05_频率作图\F2_waveform.py'),
-
-    ('阶段6', 'Fig9 轨迹几何指标',      r'06_补充作图\fig9_trajectory_metrics.py'),
-    ('阶段6', 'Fig10 指标结构 PCA',     r'06_补充作图\fig10_metric_structure.py'),
-    ('阶段6', 'F1 频率vs温度',         r'06_补充作图\F1_freq_vs_temp.py'),
-    ('阶段6', 'F3 部位协同性',         r'06_补充作图\F3_coordination.py'),
-    ('阶段6', 'F4 呼吸-速度',          r'06_补充作图\F4_resp_velocity.py'),
-    ('阶段6', 'F5 代价比',             r'06_补充作图\F5_cost_ratio.py'),
-    # ⚠ F6 口径漂移扫描 / Fig4A 时序验证 / plot_analysis：2026-09-16 已移至 99_历史脚本（作废），
-    #   不再执行。
+# (step, label, script path relative to this directory)
+STEPS = [
+    ('A', 'detector output per recording', '01_tables_kinematics/0_quantify_video_tta.py'),
+    ('B', 'assemble Origin_data_s', '01_tables_kinematics/0_3_assemble_Origin_data_s.py'),
+    ('C', 'split into four region tables', '01_tables_kinematics/1_split_origin_s_to_four.py'),
+    ('D1', 'kinematics: formula table', '01_tables_kinematics/5_process_quanshen.py'),
+    ('D2', 'kinematics: speed and displacement', '01_tables_kinematics/6_8_regen_speed_disp_fixed.py'),
+    ('D3', 'centroid trajectory at 1 Hz', '01_tables_kinematics/7_center_trajectory_1hz.py'),
+    ('E', 'format tables in place', '01_tables_kinematics/10_beautify_tables.py'),
+    ('F1a', 'action rate: operculum', '02_frequency/class12_respiration_frequency.py'),
+    ('F1b', 'action rate: pectoral fin', '02_frequency/class34_pectoral_frequency.py'),
+    ('F1c', 'action rate: caudal peduncle', '02_frequency/class567_caudal_frequency.py'),
+    ('F2', 'merge the 15 sheets', '02_frequency/combine_15_sheets.py'),
+    ('F3', 'per-fish metrics', '02_frequency/make_per_fish_metrics.py'),
+    ('F4a', 'check: operculum recomputation', '02_frequency/compute_respiration.py'),
+    ('F4b', 'check: pectoral recomputation', '02_frequency/compute_pectoral.py'),
+    ('F4c', 'check: caudal recomputation', '02_frequency/compute_caudal.py'),
+    ('F5', 'human agreement table', '02_frequency/make_21-1_countboard.py'),
 ]
 
 
-def steps():
-    """按 GYO_SKIP_B / GYO_SKIP_BEAUTIFY 过滤后的步骤表。"""
-    out = []
-    for ph, nm, rel in _STEPS:
-        if SKIP_B and nm.startswith('B '):
+def selected():
+    """Steps left after applying the skip switches and the command-line keywords."""
+    want = [a for a in sys.argv[1:] if not a.startswith('-')]
+    if os.environ.get('GYO_SKIP_QUANTIFY'):
+        want_skip = {'A'}
+    else:
+        want_skip = set()
+    if os.environ.get('GYO_SKIP_FORMAT'):
+        want_skip.add('E')
+    rows = []
+    for step, label, rel in STEPS:
+        if step in want_skip:
             continue
-        if SKIP_BEAUTIFY and '表格美化' in nm:
+        if want and not any(w.lower() in step.lower() or w.lower() in label.lower()
+                            for w in want):
             continue
-        out.append((ph, nm, rel))
-    return out
+        rows.append((step, label, os.path.join(HERE, rel)))
+    return rows
 
 
 def main():
-    only = sys.argv[1:]
-    P.show()
-    if SKIP_B:
-        print('[gyo] GYO_SKIP_B=1 → 跳过阶段1 的 Step B')
-    for d in (P.QUANT, P.FIG, P.MODEL_FIG, P.FREQ, P.SUPP):
-        os.makedirs(d, exist_ok=True)
+    if '--show' in sys.argv:
+        P.show()
+        return 0
+    steps = selected()
+    if not steps:
+        print('[run_downstream] no step matches the selection.')
+        return 1
 
-    cur_phase = None
-    for phase, name, rel in steps():
-        if only and not any(k in name or k in phase for k in only):
+    print('[run_downstream] %d step(s) selected' % len(steps))
+    for step, label, script in steps:
+        print('  %-4s %s' % (step, label))
+    print()
+
+    py = os.environ.get('GYO_PYTHON') or sys.executable
+    for step, label, script in steps:
+        if not os.path.exists(script):
+            print('[run_downstream] %-4s skipped: script not found (%s)' % (step, script))
             continue
-        if phase != cur_phase:
-            print('\n' + '=' * 60)
-            print('  %s' % phase)
-            print('=' * 60, flush=True)
-            cur_phase = phase
-        path = os.path.join(HERE, rel)
-        print('\n----- %s :: %s -----' % (name, rel), flush=True)
-        if not os.path.exists(path):
-            print('  [跳过] 脚本不存在', flush=True)
-            continue
-        try:
-            cmd = [PY, path]
-            if STEP_B_INPUT and name.startswith('B '):
-                cmd = [PY, path, STEP_B_INPUT]
-            r = subprocess.run(cmd, cwd=P.BASE, env=os.environ)
-            print('  exit=%d' % r.returncode, flush=True)
-            if r.returncode != 0:
-                print('  [中断] 该步失败，停止后续。', flush=True)
-                break
-        except Exception as e:
-            print('  [异常] %s: %s' % (type(e).__name__, e), flush=True)
-            break
-    print('\n[run_downstream] 结束。', flush=True)
+        print('=' * 72)
+        print('[run_downstream] %-4s %s' % (step, label))
+        print('=' * 72, flush=True)
+        code = subprocess.call([py, script], cwd=HERE)
+        if code != 0:
+            print('[run_downstream] %s failed (exit %d); stopping.' % (step, code))
+            return code
+    print('\n[run_downstream] done.')
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
