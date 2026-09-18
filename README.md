@@ -6,7 +6,8 @@ behaviour in *Gymnocypris eckloni* along a warming gradient.
 The **training code and the annotated training dataset** are here, together with the detector
 weights and the per-fish tables. The **raw video recordings (3.96 GB) and keyframe images** exceed
 GitHub's 100 MB single-file limit and are **available from the first author (Chao Ma) on reasonable
-request**. Zenodo archives this repository on every release; cite it through **[DOI of the Zenodo
+request**; **a DOI will be added here once they are placed in a public repository**.
+Zenodo archives this repository on every release; cite it through **[DOI of the Zenodo
 archive, filled in after the first release]**.
 
 ## What is in this repository
