@@ -74,7 +74,7 @@ TRAIN_CSV = os.path.join(MODEL, 'results.csv')
 IMGSZ = int(os.environ.get('GYO_IMGSZ') or 640)
 DATA_YAML = os.environ.get('GYO_DATA_YAML') or os.path.join(BASE, 'dataset.yaml')
 
-# Raw recordings (too large for GitHub and not part of the repository; obtain them from the first author).
+# Raw recordings (not distributed with this repository; obtain them from the first author).
 VIDEO_SRC = os.environ.get('GYO_VIDEO_SRC') or os.path.join(BASE, 'videos')
 
 # Historical table names -> names used in the released repository. Scripts may keep

@@ -29,7 +29,7 @@ over three body regions plus a whole-fish class used for localisation only.
 The split is a random 8:2 division of the keyframes; the file names of each subset are listed
 in `split/train.txt` and `split/val.txt`.
 
-The recordings themselves are too large for GitHub and are available from the first author (see the repository README). Fifteen
+The recordings themselves are available from the first author (see the repository README). Fifteen
 recordings are used, three at each of 16, 19, 21, 23 and 25 degrees Celsius, named `16-1` to
 `25-3`. Each is 1920 x 1080 at 30 frames per second and about 10 minutes long, giving 278,970
 frames in total.

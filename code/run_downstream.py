@@ -18,7 +18,7 @@ Step 2 - action rates per body part     -> working data root
     F4  consistency check               recompute from the region tables, compare cell by cell
     F5  human agreement                 tables/human_validation_21-1.xlsx (ground truth)
 
-The detector step needs the raw recordings, which are too large for GitHub and ship separately rather than
+The detector step needs the raw recordings, which are not distributed with this repository rather than
 shipped here; set ``GYO_SKIP_QUANTIFY=1`` when the per-video tables already exist.
 
 Usage
