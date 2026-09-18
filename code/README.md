@@ -46,7 +46,7 @@ python code/run_downstream.py F2         # only steps whose name contains F2
 python code/run_downstream.py --show     # print the effective paths
 ```
 
-The recordings and keyframes are not distributed with this repository, so obtain them from the first author and put them where step A expects.
+The recordings and keyframes are not distributed with this repository, so obtain them from the corresponding author and put them where step A expects.
 With the per-recording workbooks already present, the rest of the chain runs on its own:
 
 ```bash

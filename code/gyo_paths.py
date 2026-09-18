@@ -19,7 +19,7 @@ Released layout
 
 What is *not* in the repository
 -------------------------------
-Raw recordings and keyframes are not hosted here (see README); obtain them from the first author. The scripts therefore
+Raw recordings and keyframes are not hosted here (see README); obtain them from the corresponding author. The scripts therefore
 expect a working directory that also holds the per-video detector output
 (``MP4/<recording>/bbox_data.xlsx``) and the intermediate tables produced by
 ``01_tables_kinematics``. Point ``GYO_WORK`` at such a directory to run the full chain.
@@ -74,7 +74,7 @@ TRAIN_CSV = os.path.join(MODEL, 'results.csv')
 IMGSZ = int(os.environ.get('GYO_IMGSZ') or 640)
 DATA_YAML = os.environ.get('GYO_DATA_YAML') or os.path.join(BASE, 'dataset.yaml')
 
-# Raw recordings (not distributed with this repository; obtain them from the first author).
+# Raw recordings (not distributed with this repository; obtain them from the corresponding author).
 VIDEO_SRC = os.environ.get('GYO_VIDEO_SRC') or os.path.join(BASE, 'videos')
 
 # Historical table names -> names used in the released repository. Scripts may keep

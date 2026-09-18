@@ -4,9 +4,8 @@ Code, annotations and model weights for the study of non-invasive quantification
 behaviour in *Gymnocypris eckloni* along a warming gradient.
 
 The **training code and the annotated training dataset** are here, together with the detector
-weights and the per-fish tables. The **raw video recordings and keyframe images** are **available
-from the first author (Chao Ma) on reasonable request**; **a DOI will be added here once they are
-placed in a public repository**.
+weights and the per-fish tables. The raw video recordings and keyframe images are not hosted in a
+public repository; further inquiries can be directed to the corresponding author(s).
 Zenodo archives this repository on every release; cite it through **[DOI of the Zenodo
 archive, filled in after the first release]**.
 
@@ -49,7 +48,7 @@ training used Ultralytics 8.4.6 at an input size of 640 x 640.
 
 ## Reproduction outline
 
-1. Obtain the recordings and keyframes from the first author and unpack them where `code/`
+1. Obtain the recordings and keyframes from the corresponding author and unpack them where `code/`
    expects them (`GYO_VIDEO_SRC` for the recordings, `images/` for the keyframes).
 2. Rebuild the dataset from `split/*.txt` together with `annotations/`, using `dataset.yaml`.
 3. Either train the detector with `code/00_training/randomsplit_VOCdevkit/train_G0_yolo11n_unified.py`
