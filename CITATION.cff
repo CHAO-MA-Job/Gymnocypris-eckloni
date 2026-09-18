@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this software, the training dataset or the weights, please cite this repository together with its Zenodo archive."
+message: "If you use this software, the training dataset or the weights, please cite this repository."
 title: "Behavioural video quantification for Gymnocypris eckloni under warming: code and annotations"
 version: 1.0.0
 date-released: "2026-09-17"
@@ -36,6 +36,6 @@ authors:
   - family-names: "Liu"
     given-names: "Haiping"
 identifiers:
-  - type: doi
-    value: "10.5281/zenodo.<id>"
-    description: "Zenodo archive of this GitHub release, covering the code, annotations, split files, detector weights and derived tables. Fill in after enabling the Zenodo-GitHub integration and publishing the first release. Raw recordings and keyframe images are excluded from every archive because of their size."
+  - type: url
+    value: "https://github.com/CHAO-MA-Job/Gymnocypris-eckloni"
+    description: "Code, annotations, split files, detector weights and the derived tables."

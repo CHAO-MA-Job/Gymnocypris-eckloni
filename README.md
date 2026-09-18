@@ -6,8 +6,6 @@ behaviour in *Gymnocypris eckloni* along a warming gradient.
 The **training code and the annotated training dataset** are here, together with the detector
 weights and the per-fish tables. The raw video recordings and keyframe images are not hosted in a
 public repository; further inquiries can be directed to the corresponding author(s).
-Zenodo archives this repository on every release; cite it through **[DOI of the Zenodo
-archive, filled in after the first release]**.
 
 ## What is in this repository
 
@@ -65,4 +63,4 @@ Code: **MIT**. Annotations and tables: **CC BY 4.0**. Recordings and keyframes o
 
 ## Cite
 
-See `CITATION.cff`. Add the Zenodo DOI of the code archive there once it is issued.
+See `CITATION.cff`.
