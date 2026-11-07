@@ -22,11 +22,11 @@ python 03_code/entrypoints/train_time80.py --dataset path/to/dataset --check-onl
 python 03_code/entrypoints/train_time80.py --dataset path/to/dataset --device 0 --output runs
 python 03_code/entrypoints/infer_video.py --video path/to/video.mp4 --output runs/video_01 --device 0
 python 03_code/entrypoints/count_events.py --detections runs/video_01/bbox_data.xlsx --total-frames FRAME_COUNT --output runs/video_01/events
-python 03_code/analysis/核验一致性界限和CCC.py
-python 03_code/figures/Figure3_模型性能与人工定位对照.py
-python 03_code/figures/Figure4_原结构_含平滑插图.py
-python 03_code/figures/Figure5_按已处理数据绘制.py
-python 03_code/figures/Figure6_A恢复原版点云.py
+python 03_code/analysis/agreement.py
+python 03_code/figures/figure3.py
+python 03_code/figures/figure4.py
+python 03_code/figures/figure5.py
+python 03_code/figures/figure6.py
 ```
 
 Inference uses the trained model, 640-pixel input and test-time augmentation by default. Event counting uses complete 300-frame windows at 30 fps. Generated figures and analysis outputs are written under `runs/`. Input and output paths can be selected for the local environment.

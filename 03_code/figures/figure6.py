@@ -37,5 +37,5 @@ fig.canvas.draw();fig.text(.025,axes[0].get_position().y1+.025,'A',fontweight='b
 from matplotlib.text import Text
 for obj in fig.findobj(match=Text):
  if obj.get_text().strip(): obj.set_fontsize(max(obj.get_fontsize(), 10.8))
-out=OUT/'Figure6_A恢复原版点云_ABC_900DPI.png';fig.savefig(out,dpi=900);plt.close(fig);print(out)
+out=OUT/'Figure6.png';fig.savefig(out,dpi=900);plt.close(fig);print(out)
 ydata.to_csv(OUT/'Figure6_A_映射Y均值和个体标准差.csv',index=False,encoding='utf-8-sig')
