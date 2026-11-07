@@ -1,6 +1,6 @@
 # Gymnocypris eckloni video analysis: code package
 
-The package contains the chronological-split YOLO11n training and video inference entrypoints, regional event-counting code, agreement analysis, and scripts for Figures 3–6. The figure scripts use the accompanying processed data.
+The package contains the chronological-split YOLO11n training and video inference entrypoints, regional event-counting code and agreement analysis.
 
 ## Contents
 
@@ -8,8 +8,8 @@ The package contains the chronological-split YOLO11n training and video inferenc
 - `02_model/`: trained model, initial weights, training configuration and logs.
 - `03_code/entrypoints/`: training, video inference and event counting.
 - `03_code/analysis/`: agreement-statistics verification.
-- `03_code/figures/`: scripts for the manuscript Figures 3–6.
-- `04_analysis_data/`: processed inputs used by the figure and agreement scripts.
+- `04_analysis_data/`: processed data for movement and agreement analyses.
+- `04_analysis_data/Analysis_and_validation.xlsx`: movement, event-counting, calibration and manual-validation tables.
 
 The split contains 2,891 training images, 635 validation images and 246 guard images from eight fish. Images and YOLO labels are included under `01_dataset/images/` and `01_dataset/labels/`; the training entrypoint accepts this dataset directory via `--dataset`. The video path is supplied to the inference entrypoint.
 
@@ -23,13 +23,9 @@ python 03_code/entrypoints/train_time80.py --dataset path/to/dataset --device 0 
 python 03_code/entrypoints/infer_video.py --video path/to/video.mp4 --output runs/video_01 --device 0
 python 03_code/entrypoints/count_events.py --detections runs/video_01/bbox_data.xlsx --total-frames FRAME_COUNT --output runs/video_01/events
 python 03_code/analysis/agreement.py
-python 03_code/figures/figure3.py
-python 03_code/figures/figure4.py
-python 03_code/figures/figure5.py
-python 03_code/figures/figure6.py
 ```
 
-Inference uses the trained model, 640-pixel input and test-time augmentation by default. Event counting uses complete 300-frame windows at 30 fps. Generated figures and analysis outputs are written under `runs/`. Input and output paths can be selected for the local environment.
+Inference uses the trained model, 640-pixel input and test-time augmentation by default. Event counting uses complete 300-frame windows at 30 fps. Analysis outputs are written under `runs/`. Input and output paths can be selected for the local environment.
 
 Model labels are YOLO indices 0–7: whole fish; operculum open; operculum closed; pectoral fins extended; pectoral fins contracted; caudal peduncle left; centred; right.
 
