@@ -1,12 +1,10 @@
-# Packages imported by the scripts in code/.
-# Pin the versions to your own environment before use.
-PIL
-cv2
-matplotlib
+ultralytics==8.4.6
+torch>=2.5,<2.7
 numpy
-openpyxl
 pandas
+opencv-python
+openpyxl
+PyYAML
 scipy
-seaborn
-torch
-ultralytics
+statsmodels
+matplotlib

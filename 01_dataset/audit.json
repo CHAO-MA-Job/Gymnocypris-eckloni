@@ -1,0 +1,128 @@
+{
+  "created": "2026-11-03T19:32:58.056859",
+  "strategy": "Per-video chronological split at 80th-percentile annotated-frame time; exclude [boundary-2.5, boundary+2.5) seconds",
+  "guard_seconds": 5,
+  "counts": {
+    "train": 2891,
+    "guard": 246,
+    "val": 635
+  },
+  "per_video": [
+    {
+      "video": "16-1",
+      "n": 500,
+      "train": 385,
+      "guard": 30,
+      "val": 85,
+      "nominal_boundary_s": 245.267,
+      "last_train_s": 242.633,
+      "first_val_s": 247.767,
+      "minimum_gap_s": 5.133999999999986
+    },
+    {
+      "video": "16-2",
+      "n": 500,
+      "train": 385,
+      "guard": 30,
+      "val": 85,
+      "nominal_boundary_s": 173.733,
+      "last_train_s": 171.067,
+      "first_val_s": 176.233,
+      "minimum_gap_s": 5.165999999999997
+    },
+    {
+      "video": "16-3",
+      "n": 349,
+      "train": 264,
+      "guard": 30,
+      "val": 55,
+      "nominal_boundary_s": 147.467,
+      "last_train_s": 144.8,
+      "first_val_s": 149.967,
+      "minimum_gap_s": 5.167000000000002
+    },
+    {
+      "video": "19-1",
+      "n": 500,
+      "train": 379,
+      "guard": 36,
+      "val": 85,
+      "nominal_boundary_s": 434.9,
+      "last_train_s": 432.233,
+      "first_val_s": 439.1,
+      "minimum_gap_s": 6.867000000000019
+    },
+    {
+      "video": "19-2",
+      "n": 500,
+      "train": 385,
+      "guard": 30,
+      "val": 85,
+      "nominal_boundary_s": 293.133,
+      "last_train_s": 290.467,
+      "first_val_s": 295.633,
+      "minimum_gap_s": 5.165999999999997
+    },
+    {
+      "video": "21-1",
+      "n": 459,
+      "train": 352,
+      "guard": 30,
+      "val": 77,
+      "nominal_boundary_s": 321.733,
+      "last_train_s": 319.067,
+      "first_val_s": 324.267,
+      "minimum_gap_s": 5.199999999999989
+    },
+    {
+      "video": "21-2",
+      "n": 464,
+      "train": 356,
+      "guard": 30,
+      "val": 78,
+      "nominal_boundary_s": 250.9,
+      "last_train_s": 248.233,
+      "first_val_s": 253.4,
+      "minimum_gap_s": 5.167000000000002
+    },
+    {
+      "video": "21-3",
+      "n": 500,
+      "train": 385,
+      "guard": 30,
+      "val": 85,
+      "nominal_boundary_s": 199.033,
+      "last_train_s": 196.367,
+      "first_val_s": 201.533,
+      "minimum_gap_s": 5.165999999999997
+    }
+  ],
+  "class_counts": {
+    "train": {
+      "0": 2891,
+      "1": 1808,
+      "2": 1081,
+      "3": 1322,
+      "4": 1570,
+      "5": 606,
+      "6": 1647,
+      "7": 639
+    },
+    "val": {
+      "0": 635,
+      "1": 379,
+      "2": 256,
+      "3": 321,
+      "4": 314,
+      "5": 159,
+      "6": 303,
+      "7": 173
+    }
+  },
+  "sha256_cross_split_count": 0,
+  "source_frame_cross_split_count": 0,
+  "provenance_sha256": "9ca8989c4f36065ddb9635f9e522604e7689632ed4635f459074c164dc3d6ae6",
+  "image_mode": "symbolic link to original read-only image",
+  "label_mode": "copied original training labels; four later corrected drafts not included",
+  "interpretation": "same fish and recording in both splits; validation participates in checkpoint selection; not unseen fish or independent test; temporal guard does not prove visual independence"
+}

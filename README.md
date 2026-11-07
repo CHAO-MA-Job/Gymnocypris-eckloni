@@ -1,66 +1,40 @@
-# Behavioural video quantification for *Gymnocypris eckloni* under warming
+# Gymnocypris eckloni video analysis: code package
 
-Code, annotations and model weights for the study of non-invasive quantification of fine-scale
-behaviour in *Gymnocypris eckloni* along a warming gradient.
+The package contains the chronological-split YOLO11n training and video inference entrypoints, regional event-counting code, agreement analysis, and scripts for Figures 3–6. The figure scripts use the accompanying processed data.
 
-The **training code and the annotated training dataset** are here, together with the detector
-weights and the per-fish tables. The raw video recordings and keyframe images are not hosted in a
-public repository; further inquiries can be directed to the corresponding author(s).
+## Contents
 
-## What is in this repository
+- `01_dataset/`: images, YOLO labels, split manifests and per-video counts.
+- `02_model/`: trained model, initial weights, training configuration and logs.
+- `03_code/entrypoints/`: training, video inference and event counting.
+- `03_code/analysis/`: agreement-statistics verification.
+- `03_code/figures/`: scripts for the manuscript Figures 3–6.
+- `04_analysis_data/`: processed inputs used by the figure and agreement scripts.
 
-| Path | Contents |
-|---|---|
-| `code/` | Scripts for detector training, video quantification and the behavioural tables |
-| `annotations/Annotations/` | 3,772 VOC-format XML annotations |
-| `annotations/labels/` | The same annotations in YOLO txt format |
-| `split/train.txt`, `split/val.txt` | Image filenames in the 8:2 split (3,017 train / 755 validation) |
-| `dataset.yaml` | Dataset descriptor used for training and validation |
-| `model/best.pt` | Detector weights used for every result in the paper (mAP@0.5 = 0.9197) |
-| `model/args.yaml`, `model/results.csv` | Training arguments and per-epoch metrics |
-| `model/PROVENANCE.md` | How the released weights were produced |
-| `quantification/opercular/stats/`, `quantification/pectoral/stats/`, `quantification/caudal/stats/` | Per-fish action-rate tables, one workbook per recording for each body part |
-| `tables/per_fish_metrics.csv` | Per-fish swimming speed, cumulative displacement and the three part-movement rates |
-| `tables/per_fish_summary.xlsx`, `tables/centroid_trajectory_1hz.xlsx`, `tables/velocity_displacement.xlsx` | Per-fish summary, 1 Hz centroid tracks and the velocity/displacement table |
-| `tables/human_validation_21-1.xlsx` | Automated versus human counts per 10 s window for fish 21-1 |
-| `docs/pipeline.md` | Training and quantification pipeline |
+The split contains 2,891 training images, 635 validation images and 246 guard images from eight fish. Images and YOLO labels are included under `01_dataset/images/` and `01_dataset/labels/`; the training entrypoint accepts this dataset directory via `--dataset`. The video path is supplied to the inference entrypoint.
 
-## Ethogram
+## Run
 
-Eight classes over three functional regions, plus a whole-fish class used for localisation only:
+Install dependencies using `pip install -r requirements.txt`. The commands below are executed from this directory. Install a suitable PyTorch/CUDA build for GPU use.
 
-| Class | Region | States |
-|---|---|---|
-| 1 | whole fish | localisation only |
-| 2, 3 | operculum | closed, open |
-| 4, 5 | pectoral fins | minimal contraction, maximal expansion |
-| 6, 7, 8 | caudal peduncle | left, centred, right |
+```bash
+python 03_code/entrypoints/train_time80.py --dataset path/to/dataset --check-only
+python 03_code/entrypoints/train_time80.py --dataset path/to/dataset --device 0 --output runs
+python 03_code/entrypoints/infer_video.py --video path/to/video.mp4 --output runs/video_01 --device 0
+python 03_code/entrypoints/count_events.py --detections runs/video_01/bbox_data.xlsx --total-frames FRAME_COUNT --output runs/video_01/events
+python 03_code/analysis/核验一致性界限和CCC.py
+python 03_code/figures/Figure3_模型性能与人工定位对照.py
+python 03_code/figures/Figure4_原结构_含平滑插图.py
+python 03_code/figures/Figure5_按已处理数据绘制.py
+python 03_code/figures/Figure6_A恢复原版点云.py
+```
 
-States are mutually exclusive within a region and may co-occur between regions.
+Inference uses the trained model, 640-pixel input and test-time augmentation by default. Event counting uses complete 300-frame windows at 30 fps. Generated figures and analysis outputs are written under `runs/`. Input and output paths can be selected for the local environment.
 
-## Environment
+Model labels are YOLO indices 0–7: whole fish; operculum open; operculum closed; pectoral fins extended; pectoral fins contracted; caudal peduncle left; centred; right.
 
-Python 3, NumPy, pandas, OpenCV, matplotlib, openpyxl and Ultralytics. `requirements.txt` lists
-the packages imported by `code/`; pin the versions to your own environment before use. Detector
-training used Ultralytics 8.4.6 at an input size of 640 x 640.
+The image dataset, labels, split manifests, model weights, code and selected processed data are included in this repository. Original videos are available from the authors upon request.
 
-## Reproduction outline
+## Dependency and initial-weight provenance
 
-1. Obtain the recordings and keyframes from the corresponding author and unpack them where `code/`
-   expects them (`GYO_VIDEO_SRC` for the recordings, `images/` for the keyframes).
-2. Rebuild the dataset from `split/*.txt` together with `annotations/`, using `dataset.yaml`.
-3. Either train the detector with `code/00_training/randomsplit_VOCdevkit/train_G0_yolo11n_unified.py`
-   or reuse `model/best.pt`.
-4. Run the quantification and the action-rate steps with `python code/run_downstream.py`, then
-   compare the result with `tables/per_fish_metrics.csv`.
-
-`code/README.md` lists the scripts with their inputs and outputs.
-
-## Licence
-
-Code: **MIT**. Annotations and tables: **CC BY 4.0**. Recordings and keyframes obtained from the authors:
-**CC BY 4.0**.
-
-## Cite
-
-See `CITATION.cff`.
+Training and inference use the Ultralytics package. Ultralytics documents AGPL-3.0 and Enterprise licensing at https://www.ultralytics.com/license and publishes its source license at https://github.com/ultralytics/ultralytics/blob/main/LICENSE. The included `yolo11n_pretrained.pt` was copied from the local project training assets; its SHA-256 is `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`, matching the saved training manifest.
